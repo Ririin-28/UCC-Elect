@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    background-color: #ffffff;
+}
+::after,
+::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+
+
+/* ---------------------- Sidebar ---------------------- */
+#sidebar {
+    width: 70px;
+    min-width: 70px;
+    z-index: 1000;
+    transition: width 0.25s ease-in-out;
+    background-color: #ffa41c;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar.expand {
+    width: 260px;
+    min-width: 260px;
+    transition: width 0.25s ease-in-out;
+}
+
+.toggle-btn {
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    padding: 1.3rem 1rem;
+    margin-left: 5px;
+}
+
+.toggle-btn i {
+    font-size: 1.5rem;
+    color: #FFF;
+}
+
+.sidebar-logo {
+    margin: auto 0;
+}
+
+.sidebar-logo a {
+    color: #FFF;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+#sidebar:not(.expand) .sidebar-logo,
+#sidebar:not(.expand) a.sidebar-link span {
+    display: none;
+}
+
+
+.sidebar-nav {
+    padding: 2rem 0;
+    flex: 1 1 auto;
+}
+
+a.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #FFF;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link i {
+    font-size: 1.5rem;
+    margin-right: .75rem;
+}
+
+a.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, .075);
+    border-left: 3px solid #10812f;
+}
+
+.sidebar-item {
+    position: relative;
+}
+
+#sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
+    position: absolute;
+    top: 0;
+    left: 70px;
+    background-color: #16be46;
+    padding: 0;
+    min-width: 15rem;
+    display: none;
+}
+
+#sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
+    display: block;
+    max-height: 15em;
+    width: 100%;
+    opacity: 1;
+}
+
+#sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
+    border: solid;
+    border-width: 0 .075rem .075rem 0;
+    content: "";
+    display: inline-block;
+    padding: 2px;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.4rem;
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
+}
+
+#sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+    transform: rotate(45deg);
+    transition: all .2s ease-out;
+}
+
+.main {
+    display: flex;
+    flex-direction: column; 
+    padding: 3rem;
+    flex-grow: 1;
+    background-color: #fafbfe;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.title-container {
+    background-color: #ffa41c;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-container h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.content {
+    flex-grow: 1;
+    width: 100%;
+}
+
+button.toggle-btn img.custom-logo {
+    width: 30px !important;
+    height: auto !important;
+    max-width: 100%;
+}
+
+
+/* ---------------------- Cards ---------------------- */
+.cardBox {
+    display: flex;
+    flex-wrap: wrap;              
+    gap: 20px;                 
+    justify-content: center;      
+}
+
+.card {
+    flex: 1 1 calc(25% - 20px);  
+    max-width: 100%; 
+    min-width: 180px;             
+    padding: 15px;                
+    border: 2px solid #ccc;    
+    border-top: 5px solid #10812f;
+    border-radius: 8px;        
+    background-color: #fff;       
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.card .numbers {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.card .cardName {
+    font-size: 1rem; 
+    margin-top: 5px;
+}
+
+.card img {
+    width: 40px;          
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(100% - 20px); 
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex: 1 1 100%;         
+        max-width: 100%;       
+    }
+}
+
+.cardBox {
+    display: flex;          
+    flex-wrap: wrap;      
+    gap: 20px;          
+}

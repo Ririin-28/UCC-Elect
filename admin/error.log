@@ -1,0 +1,10 @@
+[19-Dec-2024 17:55:43 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'ucc-elect.coordinatorr' doesn't exist in C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php:106
+Stack trace:
+#0 C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php(106): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php on line 106
+[19-Dec-2024 18:01:28 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'ucc-elect.coordinatorr' doesn't exist in C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php:103
+Stack trace:
+#0 C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php(103): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\UCC_Elect\admin\admin_add_coordinator.php on line 103
