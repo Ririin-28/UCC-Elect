@@ -129,7 +129,6 @@ if ($result->num_rows > 0) {
         $interval = $current_time->diff($end_time_obj);
 
         if ($interval->d > 0) {
-
             $remaining_time = $interval->d . " day(s) " . $interval->h . ":" . $interval->i . ":" . $interval->s;
         } else {
             $remaining_time = $interval->h . ":" . $interval->i . ":" . $interval->s;
@@ -137,11 +136,17 @@ if ($result->num_rows > 0) {
 
         if ($current_time >= $end_time_obj) {
             $status = 'INACTIVE';
-            $update_sql = "UPDATE election SET status = 'INACTIVE' WHERE end_datetime = '$end_datetime'";
-            if ($conn->query($update_sql) === TRUE) {
+
+            $stmt = $conn->prepare("CALL LiveElectionUpdate(?)");
+            $stmt->bind_param("s", $end_datetime);
+
+            if ($stmt->execute()) {
+                echo "Election status updated to INACTIVE.";
             } else {
-                echo "Error updating status: " . $conn->error;
+                echo "Error updating status: " . $stmt->error;
             }
+
+            $stmt->close();
         }
     } else {
         $remaining_time = "Invalid End Time"; 
@@ -149,6 +154,7 @@ if ($result->num_rows > 0) {
 } else {
     $remaining_time = "No Election Data"; 
 }
+
 $conn->close();
 ?>
 

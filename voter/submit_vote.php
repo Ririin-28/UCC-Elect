@@ -24,31 +24,6 @@ if ($votes === null || empty($votes)) {
 }
 
 try {
-    $insert_vote_query = "INSERT INTO votes (election_id, student_id, candidate_id, position_id, timestamp) VALUES (?, ?, ?, ?, NOW())";
-    $update_vote_query = "UPDATE votes SET candidate_id = ?, timestamp = NOW() WHERE election_id = ? AND student_id = ? AND position_id = ?"; // For updating existing votes
-
-    $stmt_insert = $conn->prepare($insert_vote_query);
-    $stmt_update = $conn->prepare($update_vote_query);
-
-    if (!$stmt_insert || !$stmt_update) {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to prepare statements: ' . $conn->error]);
-        exit();
-    }
-
-    $check_votes_count_query = "SELECT COUNT(*) AS count FROM votes WHERE election_id = ? AND student_id = ?";
-    $stmt_check_votes_count = $conn->prepare($check_votes_count_query);
-    $stmt_check_votes_count->bind_param("ii", $election_id, $student_id);
-    $stmt_check_votes_count->execute();
-    $result_check_votes_count = $stmt_check_votes_count->get_result();
-    $row_check_votes_count = $result_check_votes_count->fetch_assoc();
-
-    if ($row_check_votes_count['count'] == 11) {
-        echo json_encode(['status' => 'error', 'message' => 'You have already voted for all positions.']);
-        exit();
-    }
-
-    $vote_saved = false;
-
     foreach ($votes as $position => $candidate_id) {
         $transformed_position = strtolower(str_replace('_', ' ', $position));
 
@@ -60,7 +35,8 @@ try {
         $position_row = $result_position->fetch_assoc();
 
         if (!$position_row) {
-            continue; 
+            echo "<div class='alert alert-warning'>Invalid position: $transformed_position. Skipping this position.</div>";
+            continue;
         }
         $position_id = $position_row['position_id'];
 
@@ -72,7 +48,8 @@ try {
         $row_validate = $result_validate->fetch_assoc();
 
         if ($row_validate['count'] == 0) {
-            continue; 
+            echo "<div class='alert alert-warning'>Invalid candidate selection for position: $position. Skipping this position.</div>";
+            continue;
         }
 
         $check_vote_query = "SELECT COUNT(*) AS count FROM votes WHERE election_id = ? AND student_id = ? AND position_id = ?";
@@ -83,27 +60,26 @@ try {
         $row_check_vote = $result_check_vote->fetch_assoc();
 
         if ($row_check_vote['count'] > 0) {
+            $stmt_update = $conn->prepare("CALL UpdateVote(?, ?, ?, ?)");
             $stmt_update->bind_param("iiii", $candidate_id, $election_id, $student_id, $position_id);
             if (!$stmt_update->execute()) {
-                continue; 
+                echo "<div class='alert alert-warning'>Failed to update vote for position: $position. Error: " . $stmt_update->error . "</div>";
+                continue;
             }
+            echo "<div class='alert alert-info'>Your vote for position: $position has been updated.</div>";
         } else {
+            $stmt_insert = $conn->prepare("CALL InsertVote(?, ?, ?, ?)");
             $stmt_insert->bind_param("iiii", $election_id, $student_id, $candidate_id, $position_id);
             if (!$stmt_insert->execute()) {
-                continue; 
+                echo "<div class='alert alert-warning'>Failed to insert vote for position: $position. Error: " . $stmt_insert->error . "</div>";
+                continue;
             }
+            echo "<div class='alert alert-info'>Your vote for position: $position has been saved.</div>";
         }
-
-        $vote_saved = true;
     }
 
-    if ($vote_saved) {
-        echo json_encode(['status' => 'success', 'message' => 'Vote Submitted Successfully']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'No votes were saved.']);
-    }
+    echo "<div class='alert alert-success'>Your votes have been successfully submitted for all positions you voted for.</div>";
 
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'An error occurred: ' . $e->getMessage()]);
+    echo "<div class='alert alert-danger'>An error occurred: " . $e->getMessage() . "</div>";
 }
-?>

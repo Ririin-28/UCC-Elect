@@ -106,7 +106,6 @@ $username = 'root';
 $password = '';     
 $dbname = 'ucc-elect'; 
 
-
 $conn = new mysqli($host, $username, $password, $dbname);
 
 if ($conn->connect_error) {
@@ -126,7 +125,6 @@ if ($result->num_rows > 0) {
     $end_datetime = $row['end_datetime'];
     $status = $row['status'];
 
-
     if ($end_datetime) {
         $end_time = strtotime($end_datetime);
         $current_time = new DateTime();
@@ -140,11 +138,17 @@ if ($result->num_rows > 0) {
         }
         if ($current_time >= $end_time_obj) {
             $status = 'INACTIVE';
-            $update_sql = "UPDATE election SET status = 'INACTIVE' WHERE end_datetime = '$end_datetime'";
-            if ($conn->query($update_sql) === TRUE) {
+
+            $stmt = $conn->prepare("CALL ElectionHistoryUpdate(?)");
+            $stmt->bind_param("s", $end_datetime);
+
+            if ($stmt->execute()) {
+                echo "Election status updated to INACTIVE.";
             } else {
-                echo "Error updating status: " . $conn->error;
+                echo "Error updating status: " . $stmt->error;
             }
+
+            $stmt->close();
         }
     } else {
         $remaining_time = "Invalid End Time";
@@ -155,7 +159,6 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
-
 
 
 <!DOCTYPE html>

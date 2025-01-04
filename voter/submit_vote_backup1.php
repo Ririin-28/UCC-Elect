@@ -22,16 +22,6 @@ if ($votes === null || empty($votes)) {
 }
 
 try {
-    $insert_vote_query = "INSERT INTO votes (election_id, student_id, candidate_id, position_id, timestamp) VALUES (?, ?, ?, ?, NOW())";
-    $update_vote_query = "UPDATE votes SET candidate_id = ?, timestamp = NOW() WHERE election_id = ? AND student_id = ? AND position_id = ?"; 
-    
-    $stmt_insert = $conn->prepare($insert_vote_query);
-    $stmt_update = $conn->prepare($update_vote_query);
-
-    if (!$stmt_insert || !$stmt_update) {
-        throw new Exception("Failed to prepare statements: " . $conn->error);
-    }
-
     foreach ($votes as $position => $candidate_id) {
         $transformed_position = strtolower(str_replace('_', ' ', $position));
 
@@ -44,7 +34,7 @@ try {
 
         if (!$position_row) {
             echo "<div class='alert alert-warning'>Invalid position: $transformed_position. Skipping this position.</div>";
-            continue; 
+            continue;
         }
         $position_id = $position_row['position_id'];
 
@@ -57,7 +47,7 @@ try {
 
         if ($row_validate['count'] == 0) {
             echo "<div class='alert alert-warning'>Invalid candidate selection for position: $position. Skipping this position.</div>";
-            continue; 
+            continue;
         }
 
         $check_vote_query = "SELECT COUNT(*) AS count FROM votes WHERE election_id = ? AND student_id = ? AND position_id = ?";
@@ -68,6 +58,7 @@ try {
         $row_check_vote = $result_check_vote->fetch_assoc();
 
         if ($row_check_vote['count'] > 0) {
+            $stmt_update = $conn->prepare("CALL UpdateVote(?, ?, ?, ?)");
             $stmt_update->bind_param("iiii", $candidate_id, $election_id, $student_id, $position_id);
             if (!$stmt_update->execute()) {
                 echo "<div class='alert alert-warning'>Failed to update vote for position: $position. Error: " . $stmt_update->error . "</div>";
@@ -75,6 +66,7 @@ try {
             }
             echo "<div class='alert alert-info'>Your vote for position: $position has been updated.</div>";
         } else {
+            $stmt_insert = $conn->prepare("CALL InsertVote(?, ?, ?, ?)");
             $stmt_insert->bind_param("iiii", $election_id, $student_id, $candidate_id, $position_id);
             if (!$stmt_insert->execute()) {
                 echo "<div class='alert alert-warning'>Failed to insert vote for position: $position. Error: " . $stmt_insert->error . "</div>";
